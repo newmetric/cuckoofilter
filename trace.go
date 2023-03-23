@@ -75,6 +75,12 @@ func (t *Trace) Sync() {
 	}
 }
 
+func (t *Trace) SyncTS() {
+	t.filter.mtx.Lock()
+	defer t.filter.mtx.Unlock()
+	t.Sync()
+}
+
 func (t *Trace) Reset() {
 	t.records = t.records[:0]
 }
