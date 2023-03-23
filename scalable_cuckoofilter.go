@@ -10,6 +10,8 @@ const (
 	DefaultCapacity   = 10000
 )
 
+var _ CuckooFilter = (*ScalableCuckooFilter)(nil)
+
 type ScalableCuckooFilter struct {
 	filters    []*Filter
 	loadFactor float32

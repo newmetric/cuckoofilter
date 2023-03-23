@@ -8,6 +8,18 @@ import (
 
 const maxCuckooCount = 500
 
+type CuckooFilter interface {
+	Lookup(data []byte) bool
+	Reset()
+	Insert(data []byte) bool
+	InsertUnique(data []byte) bool
+	Delete(data []byte) bool
+	Count() uint
+	Encode() []byte
+}
+
+var _ CuckooFilter = (*Filter)(nil)
+
 // Filter is a probabilistic counter
 type Filter struct {
 	buckets   []bucket
