@@ -7,10 +7,12 @@ import (
 	"os"
 	"reflect"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestInsertion(t *testing.T) {
-	cf := NewFilter(1000000)
+	cf := NewFilter(1_000_000)
 	fd, err := os.Open("/usr/share/dict/words")
 	if err != nil {
 		panic(err)
@@ -42,6 +44,22 @@ func TestInsertion(t *testing.T) {
 	}
 }
 
+func TestGetBuckets(t *testing.T) {
+	cf := NewFilter(8)
+	cf.buckets = []bucket{
+		[4]fingerprint{1, 2, 3, 4},
+		[4]fingerprint{5, 6, 7, 8},
+	}
+	cf.count = 8
+	buckets := cf.GetBuckets()
+
+	for i, b := range buckets {
+		for j, f := range b {
+			assert.Equal(t, f, byte(cf.buckets[i][j]))
+		}
+	}
+}
+
 func TestEncodeDecode(t *testing.T) {
 	cf := NewFilter(8)
 	cf.buckets = []bucket{
@@ -70,7 +88,7 @@ func TestDecode(t *testing.T) {
 }
 
 func BenchmarkFilter_Reset(b *testing.B) {
-	const cap = 10000
+	const cap = 10_000
 	filter := NewFilter(cap)
 
 	b.ResetTimer()
@@ -81,7 +99,7 @@ func BenchmarkFilter_Reset(b *testing.B) {
 }
 
 func BenchmarkFilter_Insert(b *testing.B) {
-	const cap = 10000
+	const cap = 10_000
 	filter := NewFilter(cap)
 
 	b.ResetTimer()
@@ -94,11 +112,11 @@ func BenchmarkFilter_Insert(b *testing.B) {
 }
 
 func BenchmarkFilter_Lookup(b *testing.B) {
-	const cap = 10000
+	const cap = 10_000
 	filter := NewFilter(cap)
 
 	var hash [32]byte
-	for i := 0; i < 10000; i++ {
+	for i := 0; i < 10_000; i++ {
 		io.ReadFull(rand.Reader, hash[:])
 		filter.Insert(hash[:])
 	}

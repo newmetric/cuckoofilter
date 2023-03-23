@@ -3,8 +3,9 @@ package cuckoo
 import (
 	"strconv"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
-import "github.com/stretchr/testify/assert"
 
 func TestNormalUse(t *testing.T) {
 	filter := NewScalableCuckooFilter()

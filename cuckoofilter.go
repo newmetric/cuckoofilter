@@ -31,6 +31,10 @@ func NewFilter(capacity uint) *Filter {
 	}
 }
 
+func (cf *Filter) GetBuckets() [][bucketSize]byte {
+	return getAll(cf.buckets)
+}
+
 // Lookup returns true if data is in the counter
 func (cf *Filter) Lookup(data []byte) bool {
 	i1, fp := getIndexAndFingerprint(data, cf.bucketPow)
