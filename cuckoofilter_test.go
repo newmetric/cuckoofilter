@@ -6,12 +6,17 @@ import (
 	"io"
 	"os"
 	"reflect"
+	"runtime"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestInsertion(t *testing.T) {
+	if runtime.GOOS != "darwin" {
+		t.SkipNow()
+	}
+
 	cf := NewFilter(1_000_000)
 	fd, err := os.Open("/usr/share/dict/words")
 	if err != nil {

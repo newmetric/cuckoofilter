@@ -199,6 +199,8 @@ func Decode(bytes []byte) (*Filter, error) {
 		}
 	}
 	return &Filter{
+		mtx: new(sync.Mutex),
+
 		buckets:   buckets,
 		count:     count,
 		bucketPow: uint(bits.TrailingZeros(uint(len(buckets)))),
