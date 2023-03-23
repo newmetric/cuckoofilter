@@ -1,4 +1,4 @@
-module github.com/seiflotfy/cuckoofilter
+module github.com/newmetric/cuckoofilter
 
 go 1.20
 
