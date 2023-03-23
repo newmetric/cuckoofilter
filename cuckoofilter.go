@@ -31,8 +31,12 @@ func NewFilter(capacity uint) *Filter {
 	}
 }
 
-func (cf *Filter) GetBuckets() [][bucketSize]byte {
-	return getAll(cf.buckets)
+func (cf *Filter) GetBuckets() []bucket {
+	return cf.buckets
+}
+
+func (cf *Filter) ReplaceBuckets(buckets []bucket) {
+	cf.buckets = buckets
 }
 
 // Lookup returns true if data is in the counter

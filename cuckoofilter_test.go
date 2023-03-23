@@ -55,9 +55,28 @@ func TestGetBuckets(t *testing.T) {
 
 	for i, b := range buckets {
 		for j, f := range b {
-			assert.Equal(t, f, byte(cf.buckets[i][j]))
+			assert.Equal(t, f, cf.buckets[i][j])
 		}
 	}
+}
+
+func TestReplaceBuckets(t *testing.T) {
+	cf := NewFilter(8)
+	cf.Insert([]byte{1, 2, 3, 4})
+	cf.Insert([]byte{5, 6, 7, 8})
+
+	assert.True(t, cf.Lookup([]byte{1, 2, 3, 4}))
+
+	othercf := NewFilter(8)
+	othercf.Insert([]byte{9, 10, 11, 12})
+	othercf.Insert([]byte{13, 14, 15, 16})
+
+	assert.True(t, othercf.Lookup([]byte{9, 10, 11, 12}))
+
+	cf.ReplaceBuckets(othercf.GetBuckets())
+
+	assert.True(t, cf.Lookup([]byte{9, 10, 11, 12}))
+	assert.False(t, cf.Lookup([]byte{1, 2, 3, 4}))
 }
 
 func TestEncodeDecode(t *testing.T) {

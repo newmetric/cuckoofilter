@@ -9,7 +9,7 @@ const (
 	bucketSize = 4
 )
 
-func getAll(buckets []bucket) [][bucketSize]byte {
+func ToBytes(buckets []bucket) [][bucketSize]byte {
 	bucket := make([][bucketSize]byte, len(buckets))
 
 	for i, b := range buckets {
