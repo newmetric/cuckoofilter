@@ -9,21 +9,26 @@ import (
 
 func TestTrace(t *testing.T) {
 	filter := cuckoo.NewFilter(1_000)
+
+	filter.Insert([]byte("foo"))
+	assert.True(t, filter.Lookup([]byte("foo")))
+
 	trace := filter.NewTrace()
 
-	trace.Add([]byte("foo"))
 	trace.Add([]byte("bar"))
+	trace.Add([]byte("baz"))
+	trace.Delete([]byte("foo"))
+
+	assert.Equal(t, uint64(0x3), trace.Length())
 
 	trace.Sync()
 
-	assert.Equal(t, uint64(0x2), trace.Length())
-
-	assert.True(t, filter.Lookup([]byte("foo")))
+	assert.False(t, filter.Lookup([]byte("foo")))
 	assert.True(t, filter.Lookup([]byte("bar")))
-	assert.False(t, filter.Lookup([]byte("baz")))
+	assert.True(t, filter.Lookup([]byte("baz")))
 
-	assert.True(t, filter.Delete([]byte("foo")))
-	assert.False(t, filter.Delete([]byte("foo")))
+	assert.True(t, filter.Delete([]byte("bar")))
+	assert.False(t, filter.Delete([]byte("bar")))
 
 	trace.Reset()
 	assert.Equal(t, uint64(0x0), trace.Length())

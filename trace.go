@@ -1,9 +1,5 @@
 package cuckoo
 
-import (
-	"fmt"
-)
-
 type Trace struct {
 	filter *Filter
 
@@ -11,9 +7,15 @@ type Trace struct {
 	bucketPow uint
 }
 
+const (
+	InsertOp = iota
+	DeleteOp
+)
+
 type record struct {
 	fp fingerprint
 	i1 uint
+	op int8
 }
 
 func (f *Filter) NewTrace() *Trace {
@@ -39,7 +41,7 @@ func (t *Trace) Set(record record) {
 
 func (t *Trace) Add(data []byte) {
 	i1, fp := getIndexAndFingerprint(data, t.bucketPow)
-	t.Set(record{fp: fp, i1: i1})
+	t.Set(record{fp: fp, i1: i1, op: InsertOp})
 }
 
 func (t *Trace) AddTS(entry []byte) {
@@ -48,22 +50,21 @@ func (t *Trace) AddTS(entry []byte) {
 	t.Add(entry)
 }
 
+func (t *Trace) Delete(data []byte) {
+	i1, fp := getIndexAndFingerprint(data, t.bucketPow)
+	t.Set(record{fp: fp, i1: i1, op: DeleteOp})
+}
+
 func (t *Trace) Sync() {
 	for _, record := range t.records {
 		fp := record.fp
 		i1 := record.i1
 
-		if t.filter.insert(fp, i1) {
-			continue
-		}
-		i2 := getAltIndex(fp, i1, t.bucketPow)
-		if t.filter.insert(fp, i2) {
-			continue
-		}
-
-		if !t.filter.reinsert(fp, randi(i1, i2)) {
-			// TODO: Log
-			fmt.Printf("warn: Failed to reinsert %v\n", fp)
+		switch record.op {
+		case InsertOp:
+			t.filter.insert(fp, i1)
+		case DeleteOp:
+			t.filter.delete(fp, i1)
 		}
 	}
 }
