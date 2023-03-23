@@ -55,6 +55,12 @@ func (t *Trace) Delete(data []byte) {
 	t.Set(record{fp: fp, i1: i1, op: DeleteOp})
 }
 
+func (t *Trace) DeleteTS(entry []byte) {
+	t.filter.mtx.Lock()
+	defer t.filter.mtx.Unlock()
+	t.Delete(entry)
+}
+
 func (t *Trace) Sync() {
 	for _, record := range t.records {
 		fp := record.fp
