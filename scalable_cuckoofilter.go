@@ -3,6 +3,7 @@ package cuckoo
 import (
 	"bytes"
 	"encoding/gob"
+	"sync"
 )
 
 const (
@@ -13,6 +14,8 @@ const (
 var _ CuckooFilter = (*ScalableCuckooFilter)(nil)
 
 type ScalableCuckooFilter struct {
+	mtx *sync.Mutex
+
 	filters    []*Filter
 	loadFactor float32
 	//when scale(last filter size * loadFactor >= capacity) get new filter capacity
@@ -42,6 +45,7 @@ func NewScalableCuckooFilter(opts ...option) *ScalableCuckooFilter {
 		opt(sfilter)
 	}
 	configure(sfilter)
+	sfilter.mtx = new(sync.Mutex)
 	return sfilter
 }
 
@@ -77,6 +81,12 @@ func (sf *ScalableCuckooFilter) Insert(data []byte) bool {
 	return newFilter.Insert(data)
 }
 
+func (sf *ScalableCuckooFilter) InsertTS(data []byte) bool {
+	sf.mtx.Lock()
+	defer sf.mtx.Unlock()
+	return sf.Insert(data)
+}
+
 func (sf *ScalableCuckooFilter) InsertUnique(data []byte) bool {
 	if sf.Lookup(data) {
 		return false
@@ -91,6 +101,12 @@ func (sf *ScalableCuckooFilter) Delete(data []byte) bool {
 		}
 	}
 	return false
+}
+
+func (sf *ScalableCuckooFilter) DeleteTS(data []byte) bool {
+	sf.mtx.Lock()
+	defer sf.mtx.Unlock()
+	return sf.Delete(data)
 }
 
 func (sf *ScalableCuckooFilter) Count() uint {

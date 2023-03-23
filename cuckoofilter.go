@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/bits"
 	"math/rand"
+	"sync"
 )
 
 const maxCuckooCount = 500
@@ -12,8 +13,12 @@ type CuckooFilter interface {
 	Lookup(data []byte) bool
 	Reset()
 	Insert(data []byte) bool
+	// thread-safe
+	InsertTS(data []byte) bool
 	InsertUnique(data []byte) bool
 	Delete(data []byte) bool
+	// thread-safe
+	DeleteTS(data []byte) bool
 	Count() uint
 	Encode() []byte
 }
@@ -22,6 +27,8 @@ var _ CuckooFilter = (*Filter)(nil)
 
 // Filter is a probabilistic counter
 type Filter struct {
+	mtx *sync.Mutex
+
 	buckets   []bucket
 	count     uint
 	bucketPow uint
@@ -37,6 +44,8 @@ func NewFilter(capacity uint) *Filter {
 	}
 	buckets := make([]bucket, capacity)
 	return &Filter{
+		mtx: new(sync.Mutex),
+
 		buckets:   buckets,
 		count:     0,
 		bucketPow: uint(bits.TrailingZeros(capacity)),
@@ -89,6 +98,12 @@ func (cf *Filter) Insert(data []byte) bool {
 	return cf.reinsert(fp, randi(i1, i2))
 }
 
+func (cf *Filter) InsertTS(data []byte) bool {
+	cf.mtx.Lock()
+	defer cf.mtx.Unlock()
+	return cf.Insert(data)
+}
+
 // InsertUnique inserts data into the counter if not exists and returns true upon success
 func (cf *Filter) InsertUnique(data []byte) bool {
 	if cf.Lookup(data) {
@@ -129,6 +144,12 @@ func (cf *Filter) Delete(data []byte) bool {
 	}
 	i2 := getAltIndex(fp, i1, cf.bucketPow)
 	return cf.delete(fp, i2)
+}
+
+func (cf *Filter) DeleteTS(data []byte) bool {
+	cf.mtx.Lock()
+	defer cf.mtx.Unlock()
+	return cf.Delete(data)
 }
 
 func (cf *Filter) delete(fp fingerprint, i uint) bool {
