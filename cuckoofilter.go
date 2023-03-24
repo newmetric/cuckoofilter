@@ -62,7 +62,7 @@ func (cf *Filter) ReplaceBuckets(buckets []bucket) {
 
 // Lookup returns true if data is in the counter
 func (cf *Filter) Lookup(data []byte) bool {
-	i1, fp := getIndexAndFingerprint(data, cf.bucketPow)
+	i1, fp := GetIndexAndFingerprint(data, cf.bucketPow)
 	if cf.buckets[i1].getFingerprintIndex(fp) > -1 {
 		return true
 	}
@@ -87,7 +87,7 @@ func randi(i1, i2 uint) uint {
 
 // Insert inserts data into the counter and returns true upon success
 func (cf *Filter) Insert(data []byte) bool {
-	i1, fp := getIndexAndFingerprint(data, cf.bucketPow)
+	i1, fp := GetIndexAndFingerprint(data, cf.bucketPow)
 	if cf.insert(fp, i1) {
 		return true
 	}
@@ -138,7 +138,7 @@ func (cf *Filter) reinsert(fp fingerprint, i uint) bool {
 
 // Delete data from counter if exists and return if deleted or not
 func (cf *Filter) Delete(data []byte) bool {
-	i1, fp := getIndexAndFingerprint(data, cf.bucketPow)
+	i1, fp := GetIndexAndFingerprint(data, cf.bucketPow)
 	if cf.delete(fp, i1) {
 		return true
 	}

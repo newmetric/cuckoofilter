@@ -3,7 +3,7 @@ package cuckoo
 type Trace struct {
 	filter *Filter
 
-	records   []record
+	records   []Record
 	bucketPow uint
 }
 
@@ -12,17 +12,17 @@ const (
 	DeleteOp
 )
 
-type record struct {
-	fp fingerprint
-	i1 uint
-	op int8
+type Record struct {
+	Fp fingerprint
+	I1 uint
+	Op int8
 }
 
 func (f *Filter) NewTrace() *Trace {
 	return &Trace{
 		filter: f,
 
-		records:   make([]record, 0, f.count),
+		records:   make([]Record, 0, f.count),
 		bucketPow: f.bucketPow,
 	}
 }
@@ -31,17 +31,17 @@ func (t *Trace) Length() uint64 {
 	return uint64(len(t.records))
 }
 
-func (t *Trace) GetRecords() []record {
+func (t *Trace) GetRecords() []Record {
 	return t.records
 }
 
-func (t *Trace) Set(record record) {
+func (t *Trace) Set(record Record) {
 	t.records = append(t.records, record)
 }
 
 func (t *Trace) Add(data []byte) {
-	i1, fp := getIndexAndFingerprint(data, t.bucketPow)
-	t.Set(record{fp: fp, i1: i1, op: InsertOp})
+	i1, fp := GetIndexAndFingerprint(data, t.bucketPow)
+	t.Set(Record{Fp: fp, I1: i1, Op: InsertOp})
 }
 
 func (t *Trace) AddTS(entry []byte) {
@@ -51,8 +51,8 @@ func (t *Trace) AddTS(entry []byte) {
 }
 
 func (t *Trace) Delete(data []byte) {
-	i1, fp := getIndexAndFingerprint(data, t.bucketPow)
-	t.Set(record{fp: fp, i1: i1, op: DeleteOp})
+	i1, fp := GetIndexAndFingerprint(data, t.bucketPow)
+	t.Set(Record{Fp: fp, I1: i1, Op: DeleteOp})
 }
 
 func (t *Trace) DeleteTS(entry []byte) {
@@ -63,10 +63,10 @@ func (t *Trace) DeleteTS(entry []byte) {
 
 func (t *Trace) Sync() {
 	for _, record := range t.records {
-		fp := record.fp
-		i1 := record.i1
+		fp := record.Fp
+		i1 := record.I1
 
-		switch record.op {
+		switch record.Op {
 		case InsertOp:
 			t.filter.insert(fp, i1)
 		case DeleteOp:

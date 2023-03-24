@@ -31,7 +31,7 @@ func getFingerprint(hash uint64) byte {
 }
 
 // getIndicesAndFingerprint returns the 2 bucket indices and fingerprint to be used
-func getIndexAndFingerprint(data []byte, bucketPow uint) (uint, fingerprint) {
+func GetIndexAndFingerprint(data []byte, bucketPow uint) (uint, fingerprint) {
 	hash := metro.Hash64(data, 1337)
 	fp := getFingerprint(hash)
 	// Use most significant bits for deriving index.

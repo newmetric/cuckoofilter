@@ -12,7 +12,7 @@ import (
 func TestIndexAndFP(t *testing.T) {
 	data := []byte("seif")
 	bucketPow := uint(bits.TrailingZeros(1024))
-	i1, fp := getIndexAndFingerprint(data, bucketPow)
+	i1, fp := GetIndexAndFingerprint(data, bucketPow)
 	i2 := getAltIndex(fp, i1, bucketPow)
 	i11 := getAltIndex(fp, i2, bucketPow)
 	i22 := getAltIndex(fp, i11, bucketPow)
