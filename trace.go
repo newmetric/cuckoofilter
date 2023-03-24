@@ -13,7 +13,7 @@ const (
 )
 
 type Record struct {
-	Fp fingerprint
+	Fp byte
 	I1 uint
 	Op int8
 }
@@ -41,7 +41,7 @@ func (t *Trace) Set(record Record) {
 
 func (t *Trace) Add(data []byte) {
 	i1, fp := GetIndexAndFingerprint(data, t.bucketPow)
-	t.Set(Record{Fp: fp, I1: i1, Op: InsertOp})
+	t.Set(Record{Fp: byte(fp), I1: i1, Op: InsertOp})
 }
 
 func (t *Trace) AddTS(entry []byte) {
@@ -52,7 +52,7 @@ func (t *Trace) AddTS(entry []byte) {
 
 func (t *Trace) Delete(data []byte) {
 	i1, fp := GetIndexAndFingerprint(data, t.bucketPow)
-	t.Set(Record{Fp: fp, I1: i1, Op: DeleteOp})
+	t.Set(Record{Fp: byte(fp), I1: i1, Op: DeleteOp})
 }
 
 func (t *Trace) DeleteTS(entry []byte) {
@@ -68,9 +68,9 @@ func (t *Trace) Sync() {
 
 		switch record.Op {
 		case InsertOp:
-			t.filter.insert(fp, i1)
+			t.filter.insert(fingerprint(fp), i1)
 		case DeleteOp:
-			t.filter.delete(fp, i1)
+			t.filter.delete(fingerprint(fp), i1)
 		}
 	}
 }
