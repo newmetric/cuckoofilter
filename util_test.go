@@ -95,7 +95,7 @@ func TestReset(t *testing.T) {
 func TestBucket_Reset(t *testing.T) {
 	var bkt Bucket
 	for i := byte(0); i < BucketSize; i++ {
-		bkt[i] = fingerprint(i)
+		bkt[i] = Fingerprint(i)
 	}
 	bkt.reset()
 	for _, val := range bkt {

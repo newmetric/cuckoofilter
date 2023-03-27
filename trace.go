@@ -68,9 +68,9 @@ func (t *Trace) Sync() {
 
 		switch record.Op {
 		case InsertOp:
-			t.filter.insert(fingerprint(fp), i1)
+			t.filter.insert(Fingerprint(fp), i1)
 		case DeleteOp:
-			t.filter.delete(fingerprint(fp), i1)
+			t.filter.delete(Fingerprint(fp), i1)
 		}
 	}
 }

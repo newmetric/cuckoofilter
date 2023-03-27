@@ -52,8 +52,8 @@ func TestInsertion(t *testing.T) {
 func TestGetBuckets(t *testing.T) {
 	cf := NewFilter(8)
 	cf.buckets = []Bucket{
-		[4]fingerprint{1, 2, 3, 4},
-		[4]fingerprint{5, 6, 7, 8},
+		[4]Fingerprint{1, 2, 3, 4},
+		[4]Fingerprint{5, 6, 7, 8},
 	}
 	cf.count = 8
 	buckets := cf.GetBuckets()
@@ -87,8 +87,8 @@ func TestReplaceBuckets(t *testing.T) {
 func TestEncodeDecode(t *testing.T) {
 	cf := NewFilter(8)
 	cf.buckets = []Bucket{
-		[4]fingerprint{1, 2, 3, 4},
-		[4]fingerprint{5, 6, 7, 8},
+		[4]Fingerprint{1, 2, 3, 4},
+		[4]Fingerprint{5, 6, 7, 8},
 	}
 	cf.count = 8
 	bytes := cf.Encode()
