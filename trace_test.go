@@ -19,7 +19,7 @@ func TestTrace(t *testing.T) {
 	trace.Add([]byte("baz"))
 	trace.Delete([]byte("foo"))
 
-	assert.Equal(t, uint64(0x3), trace.Length())
+	assert.Equal(t, uint64(3), trace.Length())
 
 	trace.Sync()
 
@@ -31,5 +31,5 @@ func TestTrace(t *testing.T) {
 	assert.False(t, filter.Delete([]byte("bar")))
 
 	trace.Reset()
-	assert.Equal(t, uint64(0x0), trace.Length())
+	assert.Equal(t, uint64(0), trace.Length())
 }

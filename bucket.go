@@ -2,15 +2,15 @@ package cuckoo
 
 type fingerprint byte
 
-type bucket [bucketSize]fingerprint
+type Bucket [BucketSize]fingerprint
 
 const (
 	nullFp     = 0
-	bucketSize = 4
+	BucketSize = 4
 )
 
-func ToBytes(buckets []bucket) [][bucketSize]byte {
-	bucket := make([][bucketSize]byte, len(buckets))
+func ToBytes(buckets []Bucket) [][BucketSize]byte {
+	bucket := make([][BucketSize]byte, len(buckets))
 
 	for i, b := range buckets {
 		for j, f := range b {
@@ -20,7 +20,7 @@ func ToBytes(buckets []bucket) [][bucketSize]byte {
 	return bucket
 }
 
-func (b *bucket) insert(fp fingerprint) bool {
+func (b *Bucket) insert(fp fingerprint) bool {
 	for i, tfp := range b {
 		if tfp == nullFp {
 			b[i] = fp
@@ -30,7 +30,7 @@ func (b *bucket) insert(fp fingerprint) bool {
 	return false
 }
 
-func (b *bucket) delete(fp fingerprint) bool {
+func (b *Bucket) delete(fp fingerprint) bool {
 	for i, tfp := range b {
 		if tfp == fp {
 			b[i] = nullFp
@@ -40,7 +40,7 @@ func (b *bucket) delete(fp fingerprint) bool {
 	return false
 }
 
-func (b *bucket) getFingerprintIndex(fp fingerprint) int {
+func (b *Bucket) getFingerprintIndex(fp fingerprint) int {
 	for i, tfp := range b {
 		if tfp == fp {
 			return i
@@ -49,7 +49,7 @@ func (b *bucket) getFingerprintIndex(fp fingerprint) int {
 	return -1
 }
 
-func (b *bucket) reset() {
+func (b *Bucket) reset() {
 	for i := range b {
 		b[i] = nullFp
 	}

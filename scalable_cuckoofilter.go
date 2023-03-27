@@ -179,7 +179,7 @@ func configure(sfilter *ScalableCuckooFilter) {
 	}
 	if sfilter.scaleFactor == nil {
 		sfilter.scaleFactor = func(currentSize uint) uint {
-			return currentSize * bucketSize * 2
+			return currentSize * BucketSize * 2
 		}
 	}
 	if sfilter.filters == nil {

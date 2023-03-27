@@ -29,7 +29,7 @@ var _ CuckooFilter = (*Filter)(nil)
 type Filter struct {
 	mtx *sync.Mutex
 
-	buckets   []bucket
+	buckets   []Bucket
 	count     uint
 	bucketPow uint
 }
@@ -38,11 +38,11 @@ type Filter struct {
 // A capacity of 1000000 is a normal default, which allocates
 // about ~1MB on 64-bit machines.
 func NewFilter(capacity uint) *Filter {
-	capacity = getNextPow2(uint64(capacity)) / bucketSize
+	capacity = getNextPow2(uint64(capacity)) / BucketSize
 	if capacity == 0 {
 		capacity = 1
 	}
-	buckets := make([]bucket, capacity)
+	buckets := make([]Bucket, capacity)
 	return &Filter{
 		mtx: new(sync.Mutex),
 
@@ -52,11 +52,11 @@ func NewFilter(capacity uint) *Filter {
 	}
 }
 
-func (cf *Filter) GetBuckets() []bucket {
+func (cf *Filter) GetBuckets() []Bucket {
 	return cf.buckets
 }
 
-func (cf *Filter) ReplaceBuckets(buckets []bucket) {
+func (cf *Filter) ReplaceBuckets(buckets []Bucket) {
 	cf.buckets = buckets
 }
 
@@ -122,7 +122,7 @@ func (cf *Filter) insert(fp fingerprint, i uint) bool {
 
 func (cf *Filter) reinsert(fp fingerprint, i uint) bool {
 	for k := 0; k < maxCuckooCount; k++ {
-		j := rand.Intn(bucketSize)
+		j := rand.Intn(BucketSize)
 		oldfp := fp
 		fp = cf.buckets[i][j]
 		cf.buckets[i][j] = oldfp
@@ -169,7 +169,7 @@ func (cf *Filter) Count() uint {
 
 // Encode returns a byte slice representing a Cuckoofilter
 func (cf *Filter) Encode() []byte {
-	bytes := make([]byte, len(cf.buckets)*bucketSize)
+	bytes := make([]byte, len(cf.buckets)*BucketSize)
 	for i, b := range cf.buckets {
 		for j, f := range b {
 			index := (i * len(b)) + j
@@ -182,13 +182,13 @@ func (cf *Filter) Encode() []byte {
 // Decode returns a Cuckoofilter from a byte slice
 func Decode(bytes []byte) (*Filter, error) {
 	var count uint
-	if len(bytes)%bucketSize != 0 {
-		return nil, fmt.Errorf("expected bytes to be multiple of %d, got %d", bucketSize, len(bytes))
+	if len(bytes)%BucketSize != 0 {
+		return nil, fmt.Errorf("expected bytes to be multiple of %d, got %d", BucketSize, len(bytes))
 	}
 	if len(bytes) == 0 {
 		return nil, fmt.Errorf("bytes can not be empty")
 	}
-	buckets := make([]bucket, len(bytes)/4)
+	buckets := make([]Bucket, len(bytes)/4)
 	for i, b := range buckets {
 		for j := range b {
 			index := (i * len(b)) + j

@@ -51,7 +51,7 @@ func TestInsertion(t *testing.T) {
 
 func TestGetBuckets(t *testing.T) {
 	cf := NewFilter(8)
-	cf.buckets = []bucket{
+	cf.buckets = []Bucket{
 		[4]fingerprint{1, 2, 3, 4},
 		[4]fingerprint{5, 6, 7, 8},
 	}
@@ -86,7 +86,7 @@ func TestReplaceBuckets(t *testing.T) {
 
 func TestEncodeDecode(t *testing.T) {
 	cf := NewFilter(8)
-	cf.buckets = []bucket{
+	cf.buckets = []Bucket{
 		[4]fingerprint{1, 2, 3, 4},
 		[4]fingerprint{5, 6, 7, 8},
 	}

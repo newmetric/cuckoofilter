@@ -22,7 +22,7 @@ func TestIndexAndFP(t *testing.T) {
 
 func TestCap(t *testing.T) {
 	const capacity = 10000
-	res := getNextPow2(uint64(capacity)) / bucketSize
+	res := getNextPow2(uint64(capacity)) / BucketSize
 	assert.EqualValues(t, res, 4096)
 }
 
@@ -93,8 +93,8 @@ func TestReset(t *testing.T) {
 }
 
 func TestBucket_Reset(t *testing.T) {
-	var bkt bucket
-	for i := byte(0); i < bucketSize; i++ {
+	var bkt Bucket
+	for i := byte(0); i < BucketSize; i++ {
 		bkt[i] = fingerprint(i)
 	}
 	bkt.reset()
